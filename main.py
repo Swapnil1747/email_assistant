@@ -18,6 +18,12 @@ from bs4 import BeautifulSoup
 import os
 import base64
 from dotenv import load_dotenv
+import socket
+
+def get_free_port():
+    with socket.socket() as s:
+        s.bind(('', 0))
+        return s.getsockname()[1]
 
 load_dotenv()
 
@@ -44,6 +50,7 @@ def authenticate_google_services():
             client_secret = os.getenv("GOOGLE_CLIENT_SECRET")
             if not client_id or not client_secret:
                 raise RuntimeError("Google OAuth credentials not found in environment variables.")
+
             flow = InstalledAppFlow.from_client_config(
                 {
                     "installed": {
@@ -56,14 +63,14 @@ def authenticate_google_services():
                 },
                 SCOPES
             )
-            # Use a less common port and disable browser
-            creds = flow.run_local_server(open_browser=False, port=8765)
+            port = get_free_port()
+            creds = flow.run_local_server(port=port, open_browser=False)
             with open('token.json', 'w') as token:
                 token.write(creds.to_json())
+
     gmail_service = build('gmail', 'v1', credentials=creds)
     calendar_service = build('calendar', 'v3', credentials=creds)
     return gmail_service, calendar_service
-
 
 
 
