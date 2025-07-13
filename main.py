@@ -51,17 +51,18 @@ def authenticate_google_services():
                         "client_secret": client_secret,
                         "auth_uri": "https://accounts.google.com/o/oauth2/auth",
                         "token_uri": "https://oauth2.googleapis.com/token",
-                        "redirect_uris": ["urn:ietf:wg:oauth:2.0:oob"]
+                        "redirect_uris": ["http://localhost"]
                     }
                 },
                 SCOPES
             )
-            creds = flow.run_console()
+            creds = flow.run_local_server(open_browser=False, port=53135)
             with open('token.json', 'w') as token:
                 token.write(creds.to_json())
     gmail_service = build('gmail', 'v1', credentials=creds)
     calendar_service = build('calendar', 'v3', credentials=creds)
     return gmail_service, calendar_service
+
 
 
 def parse_email_body(payload):
