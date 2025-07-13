@@ -16,8 +16,10 @@ from datetime import datetime
 from dateutil.tz import gettz
 from bs4 import BeautifulSoup
 import os
-import streamlit as st
 import base64
+from dotenv import load_dotenv
+
+load_dotenv()
 
 SCOPES = [
     'https://www.googleapis.com/auth/gmail.readonly',
@@ -38,11 +40,15 @@ def authenticate_google_services():
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
+            client_id = os.getenv("GOOGLE_CLIENT_ID")
+            client_secret = os.getenv("GOOGLE_CLIENT_SECRET")
+            if not client_id or not client_secret:
+                raise RuntimeError("Google OAuth credentials not found in environment variables.")
             flow = InstalledAppFlow.from_client_config(
                 {
                     "installed": {
-                        "client_id": st.secrets["google_oauth"]["client_id"],
-                        "client_secret": st.secrets["google_oauth"]["client_secret"],
+                        "client_id": client_id,
+                        "client_secret": client_secret,
                         "auth_uri": "https://accounts.google.com/o/oauth2/auth",
                         "token_uri": "https://oauth2.googleapis.com/token",
                         "redirect_uris": ["http://localhost"]
