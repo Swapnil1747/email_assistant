@@ -56,12 +56,14 @@ def authenticate_google_services():
                 },
                 SCOPES
             )
-            creds = flow.run_local_server(open_browser=False, port=53135)
+            # Use a less common port and disable browser
+            creds = flow.run_local_server(open_browser=False, port=8765)
             with open('token.json', 'w') as token:
                 token.write(creds.to_json())
     gmail_service = build('gmail', 'v1', credentials=creds)
     calendar_service = build('calendar', 'v3', credentials=creds)
     return gmail_service, calendar_service
+
 
 
 
