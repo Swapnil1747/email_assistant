@@ -15,7 +15,8 @@ from email.utils import parsedate_to_datetime
 from datetime import datetime
 from dateutil.tz import gettz
 from bs4 import BeautifulSoup
-import os.path
+import os
+import streamlit as st
 import base64
 
 SCOPES = [
@@ -37,10 +38,21 @@ def authenticate_google_services():
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
-            creds = flow.run_local_server(port=0)
-        with open('token.json', 'w') as token:
-            token.write(creds.to_json())
+            flow = InstalledAppFlow.from_client_config(
+                {
+                    "installed": {
+                        "client_id": st.secrets["google_oauth"]["client_id"],
+                        "client_secret": st.secrets["google_oauth"]["client_secret"],
+                        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                        "token_uri": "https://oauth2.googleapis.com/token",
+                        "redirect_uris": ["http://localhost"]
+                    }
+                },
+                SCOPES
+            )
+            creds = flow.run_local_server(port=53135)
+            with open('token.json', 'w') as token:
+                token.write(creds.to_json())
     gmail_service = build('gmail', 'v1', credentials=creds)
     calendar_service = build('calendar', 'v3', credentials=creds)
     return gmail_service, calendar_service
@@ -188,5 +200,5 @@ if __name__ == '__main__':
     init_db()
     gmail_service, calendar_service = authenticate_google_services()
     fetch_and_store_emails(gmail_service)
-    auto_reply_unread_emails(gmail_service)
+    auto_reply_unread_emails(gmail_service, calendar_service)
     demo_llm_integration(calendar_service)
