@@ -4,7 +4,7 @@ import google.generativeai as genai
 from google.generativeai import GenerationConfig
 
 config = dotenv_values(".env")
-api_key = config.get(GEMINI_API_KEY)
+api_key = config.get("GEMINI_API_KEY")
 if not api_key:
     raise RuntimeError("GEMINI_API_KEY not found in .env")
 
