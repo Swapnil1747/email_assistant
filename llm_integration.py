@@ -1,17 +1,24 @@
 import logging
-from dotenv import dotenv_values
+import os
+import streamlit as st
 import google.generativeai as genai
 from google.generativeai import GenerationConfig
 
-config = dotenv_values(".env")
-api_key = config.get("GEMINI_API_KEY")
+# Hybrid: read API key from Streamlit secrets or fallback to .env
+api_key = None
+try:
+    api_key = st.secrets["GEMINI_API_KEY"]
+except Exception:
+    from dotenv import load_dotenv
+    load_dotenv()
+    api_key = os.getenv("GEMINI_API_KEY")
+
 if not api_key:
-    raise RuntimeError("GEMINI_API_KEY not found in .env")
+    raise RuntimeError("GEMINI_API_KEY not found in Streamlit secrets or .env")
 
 logger = logging.getLogger(__name__)
 genai.configure(api_key=api_key)
 model = genai.GenerativeModel("models/gemini-2.0-flash")
-
 gen_config = GenerationConfig(max_output_tokens=150, temperature=0.1, top_p=0.9)
 
 def summarize_email(email_text: str) -> str:
