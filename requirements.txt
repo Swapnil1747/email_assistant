@@ -25,6 +25,7 @@ beautifulsoup4==4.13.3
 lxml==5.3.2
 sqlalchemy
 google-generativeai
-spacy==3.7.2
-numpy
+numpy==1.23.5
+spacy==3.6.1
+thinc==8.1.12
 catalogue
