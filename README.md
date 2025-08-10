@@ -1,4 +1,4 @@
-# Intelligent Email Management System using AI
+# AI Personal Email Assistant
 
 An intelligent assistant that reads your Gmail, auto-replies to emails, schedules meetings, and summarizes your inbox using AI.
 
@@ -135,3 +135,4 @@ Slack SDK
 ---
 
 Let me know if you'd like it saved as a `.md` file or want help creating a project logo or badge set for GitHub!
+
